@@ -2,6 +2,51 @@
 
 This repository serves as a template for building Golang applications using Hexagonal Architecture. It includes Docker support for easy containerized deployment. Follow the instructions below to get started.
 
+
+
+# Table of Contents
+
+1. [Project Structure](#project-structure)
+   - [Layers and Folder Structure](#layers-and-folder-structure)
+     - [API Layer](#api-layer)
+     - [CMD Layer](#cmd-layer)
+     - [Docs Layer](#docs-layer)
+     - [Internal Layer](#internal-layer)
+       - [Adapters Layer](#adapters-layer)
+       - [Domain Layer](#domain-layer)
+       - [Ports Layer](#ports-layer)
+     - [Pkg Layer](#pkg-layer)
+     - [Script Layer](#script-layer)
+     - [Test Layer](#test-layer)
+     - [Root Files](#root-files)
+2. [Makefile](#makefile)
+   - [Variables and Environment](#variables-and-environment)
+   - [Targets](#targets)
+     - [install](#install)
+     - [buf](#buf)
+     - [buf-win](#buf-win)
+     - [run](#run)
+     - [lint](#lint)
+     - [test-run](#test-run)
+     - [docker-build](#docker-build)
+     - [docker-run](#docker-run)
+     - [docker-compose-up](#docker-compose-up)
+     - [docker-compose-down](#docker-compose-down)
+     - [create-tree](#create-tree)
+     - [fill-tree](#fill-tree)
+     - [docker-network-up](#docker-network-up)
+     - [docker-network-down](#docker-network-down)
+   - [PHONY Targets](#phony-targets)
+3. [Docker Compose File](#docker-compose-file)
+   - [Version](#version)
+   - [Services](#services)
+     - [postgres](#postgres)
+     - [app-service](#app-service)
+   - [Networks](#networks)
+   - [Volumes](#volumes)
+   - [Environment Variables](#environment-variables)
+
+
 ## Layers and Folder Structure
 
 ### API Layer
