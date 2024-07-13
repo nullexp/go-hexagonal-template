@@ -13,12 +13,12 @@ install:
 	@go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
 buf:
-	@env PATH="$$PATH:$$(go env GOPATH)/bin" buf generate --template proto/buf.gen.yaml proto
+	@env PATH="$$PATH:$$(go env GOPATH)/bin" buf generate --template api/proto/buf.gen.yaml api/proto
 	@echo "✅ buf done!"
 
 buf-win:
 	@set PATH=%PATH%;%GOPATH%\bin
-	@buf generate --template proto\buf.gen.yaml proto
+	@buf generate --template api\proto\buf.gen.yaml api/proto
 	@echo "✅ buf done!""
 
 run:
