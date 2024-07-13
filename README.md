@@ -2,7 +2,8 @@
 # Hexagonal Architecture Template for Golang Applications with Docker
 
 This repository serves as a template for building Golang applications using Hexagonal Architecture. It includes Docker support for easy containerized deployment. Follow the instructions below to get started.
- 
+
+```bash 
 hexagonal-golang-template/
 ├── cmd/             # Entry points of the application
 │   ├── main.go      # main file
@@ -51,4 +52,4 @@ hexagonal-golang-template/
 ├── Dockerfile       # Dockerfile for building the application image
 ├── Makefile         # Project make file
 ├── README.md        # Project documentation
-
+``` 
