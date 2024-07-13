@@ -90,5 +90,6 @@ type GetUserByUsernameAndPasswordResponse struct {
 }
 
 type GetUsersWithPaginationResponse struct {
-	Users []UserReadable `json:"users"`
+	Users      []UserReadable `json:"users"`
+	TotalCount int64          `json:"totalCount" validate:"gte=0"`
 }

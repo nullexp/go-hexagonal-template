@@ -158,3 +158,15 @@ func (ur UserRepository) GetUsersWithPagination(ctx context.Context, offset, lim
 	}
 	return users, nil
 }
+
+func (ur UserRepository) Count(ctx context.Context) (int64, error) {
+	query := `SELECT COUNT(*) FROM users`
+
+	var count int64
+	err := ur.handler.QueryRowContext(ctx, query).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}

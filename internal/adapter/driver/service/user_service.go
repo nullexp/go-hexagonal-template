@@ -303,12 +303,17 @@ func (us UserService) getUsersWithPagination(ctx context.Context, tx db.DbHandle
 		return nil, err
 	}
 
-	out := []model.UserReadable{}
+	count, err := repo.Count(ctx)
+	if err != nil {
+		return nil, err
+	}
 
+	out := []model.UserReadable{}
 	for _, user := range users {
 		out = append(out, castUserToReadable(&user))
 	}
 	return &model.GetUsersWithPaginationResponse{
-		Users: out,
+		Users:      out,
+		TotalCount: count,
 	}, nil
 }

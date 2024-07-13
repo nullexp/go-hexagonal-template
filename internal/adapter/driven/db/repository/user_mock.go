@@ -89,3 +89,8 @@ func (m *MockUserRepository) GetUsersWithPagination(ctx context.Context, offset,
 	}
 	return users, nil
 }
+
+func (m *MockUserRepository) Count(ctx context.Context) (int64, error) {
+
+	return int64(len(m.users)), nil
+}

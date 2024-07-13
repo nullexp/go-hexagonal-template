@@ -118,5 +118,5 @@ func (us *UserService) GetUsersWithPagination(ctx context.Context, request *user
 		users = append(users, userv1User)
 	}
 
-	return &userv1.GetUsersWithPaginationResponse{Users: users}, nil
+	return &userv1.GetUsersWithPaginationResponse{Users: users, TotalCount:  rs.TotalCount }, nil
 }

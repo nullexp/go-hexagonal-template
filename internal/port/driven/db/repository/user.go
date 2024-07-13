@@ -15,6 +15,7 @@ type UserRepository interface {
 	DeleteUser(context.Context, string) error
 	GetUserByUsername(ctx context.Context, username string) (*model.User, error)
 	GetUsersWithPagination(ctx context.Context, offset, limit int) ([]model.User, error)
+	Count(ctx context.Context) (int64, error)
 }
 
 type UserRepositoryFactory interface {
