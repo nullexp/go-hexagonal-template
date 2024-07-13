@@ -13,8 +13,8 @@ RUN go mod tidy
 # Build the Go application
 RUN go build -o app ./cmd/
 
-# Expose port 8082 to the outside world
-EXPOSE 8082
+# Expose port 8080 to the outside world
+EXPOSE 8080
 
 # Run the executable
 CMD ["./app"]

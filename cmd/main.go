@@ -94,8 +94,6 @@ func main() {
 
 	// Register reflection service on gRPC server.
 	reflection.Register(s)
-	// Register reflection service on gRPC server.
-	reflection.Register(s)
 
 	// Log and start the server
 	log.Printf("gRPC server listening on %s", addr)

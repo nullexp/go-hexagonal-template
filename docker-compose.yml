@@ -9,7 +9,7 @@ services:
     ports:
       - "${DB_PORT}:5432"
     networks:
-      - app-network
+      - ${APP_NETWORK_NAME}
     volumes:
       - postgres-user-data:/var/lib/postgresql/data
       - ./internal/adapter/driven/db/migration/init.sql:/docker-entrypoint-initdb.d/init.sql  # Mount init.sql into the container
@@ -34,10 +34,10 @@ services:
       - postgres
     restart: always
     networks:
-      - app-network
+      - ${APP_NETWORK_NAME}
 
 networks:
-  app-network:
+  APP_NETWORK:
     driver: bridge
     external: true
 

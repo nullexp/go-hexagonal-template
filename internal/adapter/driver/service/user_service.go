@@ -3,14 +3,12 @@ package service
 import (
 	"context"
 
-	domain "github.com/nullexp/go-hexagonal-template/internal/domain/error"
 	domainError "github.com/nullexp/go-hexagonal-template/internal/domain/error"
 	domainModel "github.com/nullexp/go-hexagonal-template/internal/domain/model"
 	"github.com/nullexp/go-hexagonal-template/internal/port/driven"
 	"github.com/nullexp/go-hexagonal-template/internal/port/driven/db"
 	"github.com/nullexp/go-hexagonal-template/internal/port/driven/db/repository"
 	"github.com/nullexp/go-hexagonal-template/internal/port/driver/model"
-	driverModel "github.com/nullexp/go-hexagonal-template/internal/port/driver/model"
 	"github.com/pkg/errors"
 )
 
@@ -24,7 +22,7 @@ func NewUserService(userRepositoryFactory repository.UserRepositoryFactory, pass
 	return &UserService{userRepositoryFactory: userRepositoryFactory, passwordService: passwordService, dbTransactionFactory: dbTransactionFactory}
 }
 
-func (us UserService) CreateUser(ctx context.Context, request driverModel.CreateUserRequest) (out *driverModel.CreateUserResponse, err error) {
+func (us UserService) CreateUser(ctx context.Context, request model.CreateUserRequest) (out *model.CreateUserResponse, err error) {
 	if err = request.Validate(ctx); err != nil {
 		return
 	}
@@ -38,17 +36,14 @@ func (us UserService) CreateUser(ctx context.Context, request driverModel.Create
 
 	out, err = us.createUser(ctx, transaction, request)
 	if err != nil {
-		txErr := tx.Rollback(ctx)
-		if err != nil {
-			err = errors.Wrap(err, txErr.Error())
-			return
-		}
+		return
 	}
 
+	err = tx.Commit(ctx)
 	return
 }
 
-func (us UserService) createUser(ctx context.Context, tx db.DbHandler, request driverModel.CreateUserRequest) (*driverModel.CreateUserResponse, error) {
+func (us UserService) createUser(ctx context.Context, tx db.DbHandler, request model.CreateUserRequest) (*model.CreateUserResponse, error) {
 	ps, err := us.passwordService.HashPassword(request.Password)
 	if err != nil {
 		return nil, err
@@ -66,11 +61,11 @@ func (us UserService) createUser(ctx context.Context, tx db.DbHandler, request d
 		return nil, err
 	}
 
-	return &driverModel.CreateUserResponse{Id: id}, nil
+	return &model.CreateUserResponse{Id: id}, nil
 }
 
-func castUserToReadable(user *domainModel.User) driverModel.UserReadable {
-	return driverModel.UserReadable{
+func castUserToReadable(user *domainModel.User) model.UserReadable {
+	return model.UserReadable{
 		Id:        user.Id,
 		Username:  user.Username,
 		RoleId:    user.RoleId,
@@ -80,7 +75,7 @@ func castUserToReadable(user *domainModel.User) driverModel.UserReadable {
 	}
 }
 
-func (us UserService) GetUserById(ctx context.Context, request driverModel.GetUserByIdRequest) (out *driverModel.GetUserByIdResponse, err error) {
+func (us UserService) GetUserById(ctx context.Context, request model.GetUserByIdRequest) (out *model.GetUserByIdResponse, err error) {
 	if err = request.Validate(ctx); err != nil {
 		return
 	}
@@ -94,17 +89,14 @@ func (us UserService) GetUserById(ctx context.Context, request driverModel.GetUs
 
 	out, err = us.getUserById(ctx, transaction, request)
 	if err != nil {
-		txErr := tx.Rollback(ctx)
-		if err != nil {
-			err = errors.Wrap(err, txErr.Error())
-			return
-		}
+		return
 	}
 
+	err = tx.Commit(ctx)
 	return
 }
 
-func (us UserService) getUserById(ctx context.Context, tx db.DbHandler, request driverModel.GetUserByIdRequest) (*driverModel.GetUserByIdResponse, error) {
+func (us UserService) getUserById(ctx context.Context, tx db.DbHandler, request model.GetUserByIdRequest) (*model.GetUserByIdResponse, error) {
 	userRepo := us.userRepositoryFactory.New(tx)
 	user, err := userRepo.GetUserById(ctx, request.Id)
 	if err != nil {
@@ -115,12 +107,12 @@ func (us UserService) getUserById(ctx context.Context, tx db.DbHandler, request 
 		return nil, domainError.ErrUserNotFound
 	}
 
-	return &driverModel.GetUserByIdResponse{
+	return &model.GetUserByIdResponse{
 		User: castUserToReadable(user),
 	}, nil
 }
 
-func (us UserService) GetAllUsers(ctx context.Context) (out *driverModel.GetAllUsersResponse, err error) {
+func (us UserService) GetAllUsers(ctx context.Context) (out *model.GetAllUsersResponse, err error) {
 	tx := us.dbTransactionFactory.NewTransaction()
 	transaction, err := tx.Begin(ctx)
 	if err != nil {
@@ -130,29 +122,26 @@ func (us UserService) GetAllUsers(ctx context.Context) (out *driverModel.GetAllU
 
 	out, err = us.getAllUsers(ctx, transaction)
 	if err != nil {
-		txErr := tx.Rollback(ctx)
-		if err != nil {
-			err = errors.Wrap(err, txErr.Error())
-			return
-		}
+		return
 	}
 
+	err = tx.Commit(ctx)
 	return
 }
 
-func (us UserService) getAllUsers(ctx context.Context, tx db.DbHandler) (*driverModel.GetAllUsersResponse, error) {
+func (us UserService) getAllUsers(ctx context.Context, tx db.DbHandler) (*model.GetAllUsersResponse, error) {
 	repo := us.userRepositoryFactory.New(tx)
 	users, err := repo.GetAllUsers(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	out := []driverModel.UserReadable{}
+	out := []model.UserReadable{}
 
 	for _, user := range users {
 		out = append(out, castUserToReadable(&user))
 	}
-	return &driverModel.GetAllUsersResponse{
+	return &model.GetAllUsersResponse{
 		Users: out,
 	}, nil
 }
@@ -171,13 +160,10 @@ func (us UserService) UpdateUser(ctx context.Context, request model.UpdateUserRe
 
 	err = us.updateUser(ctx, transaction, request)
 	if err != nil {
-		txErr := tx.Rollback(ctx)
-		if err != nil {
-			err = errors.Wrap(err, txErr.Error())
-			return
-		}
+		return
 	}
 
+	err = tx.Commit(ctx)
 	return
 }
 
@@ -218,13 +204,10 @@ func (us UserService) DeleteUser(ctx context.Context, request model.DeleteUserRe
 
 	err = us.deleteUser(ctx, transaction, request)
 	if err != nil {
-		txErr := tx.Rollback(ctx)
-		if err != nil {
-			err = errors.Wrap(err, txErr.Error())
-			return
-		}
+		return
 	}
 
+	err = tx.Commit(ctx)
 	return
 }
 
@@ -236,11 +219,11 @@ func (us UserService) deleteUser(ctx context.Context, tx db.DbHandler, request m
 	}
 
 	if user == nil {
-		return domain.ErrUserNotFound
+		return domainError.ErrUserNotFound
 	}
 
 	if user.IsAdmin {
-		return domain.ErrAdminCantBeRemoved
+		return domainError.ErrAdminCantBeRemoved
 	}
 
 	return repo.DeleteUser(ctx, request.Id)
@@ -267,6 +250,7 @@ func (us UserService) GetUserByUsernameAndPassword(ctx context.Context, request 
 		}
 	}
 
+	err = tx.Commit(ctx)
 	return
 }
 
@@ -279,13 +263,13 @@ func (us UserService) getUserByUsernameAndPassword(ctx context.Context, tx db.Db
 	}
 
 	if user == nil {
-		return nil, domain.ErrUserNotFound
+		return nil, domainError.ErrUserNotFound
 	}
 
 	err = us.passwordService.ComparePassword(user.Password, request.Password)
 	if err != nil {
 		// For security, we do not provide more info
-		return nil, domain.ErrUserNotFound
+		return nil, domainError.ErrUserNotFound
 	}
 
 	return &model.GetUserByUsernameAndPasswordResponse{User: castUserToReadable(user)}, nil
@@ -305,13 +289,10 @@ func (us UserService) GetUsersWithPagination(ctx context.Context, request model.
 
 	out, err = us.getUsersWithPagination(ctx, transaction, request)
 	if err != nil {
-		txErr := tx.Rollback(ctx)
-		if err != nil {
-			err = errors.Wrap(err, txErr.Error())
-			return
-		}
+		return
 	}
 
+	err = tx.Commit(ctx)
 	return
 }
 

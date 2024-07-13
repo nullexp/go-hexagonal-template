@@ -1,2 +1,2 @@
 -- init.sql
-CREATE DATABASE "template";
+CREATE DATABASE "app-user";
